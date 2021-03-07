@@ -27,7 +27,7 @@ The program will return a JSON string along with writing a new file at the path 
 
 
 
-#### Board Output:
+#### Board Template:
 
 ```bash
   ScrapePinterestSelenium.exe https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board E:/Apps/ArtSpire_PinterestWebscraper/chromedriver88.exe
@@ -35,7 +35,7 @@ The program will return a JSON string along with writing a new file at the path 
   
 
 
-#### Search Output:
+#### Search Template:
 
 ```bash
   ScrapePinterestSelenium.exe hcharacter design json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch search E:/Apps/ArtSpire_PinterestWebscraper/chromedriver88.exe
