@@ -12,8 +12,8 @@ The program will return a JSON string along with writing a new file at the path 
 
 ## Usage
 #### Template:
-- ```bash
-  ScrapePintrestBoard.exe [PINTEREST_BOARD_URL] [OUTPUT_TYPE] [OUTPUT_PATH] [BATCHTYPE] [PIN_OR_BOARD_OR_SEARCH] [CHROMEDRIVER_PATH]
+```bash
+  ScrapePinterestSelenium.exe [PINTEREST_BOARD_URL] [OUTPUT_TYPE] [OUTPUT_PATH] [BATCHTYPE] [PIN_OR_BOARD_OR_SEARCH] [CHROMEDRIVER_PATH]
   ```
   
 | Argument ID | Key                    | Description                                                  | Examples                                                     |
@@ -27,10 +27,18 @@ The program will return a JSON string along with writing a new file at the path 
 
 
 
-#### JSON Output:
+#### Board Output:
 
-- ```bash
-  ScrapePintrestBoard.exe https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board E:/Apps/ArtSpire_PintrestWebscraper/chromedriver88.exe
+```bash
+  ScrapePinterestSelenium.exe https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board E:/Apps/ArtSpire_PinterestWebscraper/chromedriver88.exe
+  ```
+  
+
+
+#### Search Output:
+
+```bash
+  ScrapePinterestSelenium.exe hcharacter design json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch search E:/Apps/ArtSpire_PinterestWebscraper/chromedriver88.exe
   ```
   
 

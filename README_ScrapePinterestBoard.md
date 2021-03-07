@@ -14,12 +14,12 @@ The program will return either a CSV or JSON string along with writing a new fil
 #### JSON Output:
 
 - ```bash
-  ScrapePintrestBoard.exe https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board
+  ScrapePintrestBoard.exe https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board
   ```
   
 #### CSV Output:
 
 - ```bash
-  ScrapePintrestBoard.exe https://www.pinterest.com/justin_jaro/character-design/ csv E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.csv batch board
+  ScrapePintrestBoard.exe https://www.pinterest.com/justin_jaro/character-design/ csv E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.csv batch board
   ```
 

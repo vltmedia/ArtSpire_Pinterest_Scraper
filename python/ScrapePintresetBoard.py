@@ -3,12 +3,12 @@
 
 # python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" batch board
 # python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" single board
-# python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" json E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json single pin
-# python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" csv E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.csv single pin
-# python E:/Apps/ArtSpire_PintrestWebscraper/python/ScrapePintresetBoard.py  https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board
+# python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json single pin
+# python ScrapePintresetBoard.py "https://www.pinterest.com/justin_jaro/character-design/" csv E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.csv single pin
+# python E:/Apps/ArtSpire_PinterestWebscraper/python/ScrapePintresetBoard.py  https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board
 
-# python E:/Apps/ArtSpire_PintrestWebscraper/python/ScrapePintresetBoard.py  https://www.pinterest.com/justin_jaro/character-design/ E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.csv batch board
-# E:\Apps\ArtSpire_PintrestWebscraper\ScrapePintresetBoard.exe  https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board
+# python E:/Apps/ArtSpire_PinterestWebscraper/python/ScrapePintresetBoard.py  https://www.pinterest.com/justin_jaro/character-design/ E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.csv batch board
+# E:\Apps\ArtSpire_PinterestWebscraper\ScrapePintresetBoard.exe  https://www.pinterest.com/justin_jaro/character-design/ json E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board
 
 import sys
 import csv

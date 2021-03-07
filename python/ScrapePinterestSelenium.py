@@ -1,7 +1,7 @@
 
-# python E:\Apps\ArtSpire_PintrestWebscraper\python\ScrapePinterestSelenium.py  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PintrestWebscraper\chromedriver88.exe
-# E:\Apps\ArtSpire_PintrestWebscraper\ScrapePinterestSelenium.exe  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PintrestWebscraper\chromedriver88.exe
-# E:\Apps\ArtSpire_PintrestWebscraper\ScrapePinterestSelenium.exe  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PintrestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PintrestWebscraper\chromedriver88.exe
+# python E:\Apps\ArtSpire_PinterestWebscraper\python\ScrapePinterestSelenium.py  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PinterestWebscraper\chromedriver88.exe
+# E:\Apps\ArtSpire_PinterestWebscraper\ScrapePinterestSelenium.exe  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PinterestWebscraper\chromedriver88.exe
+# E:\Apps\ArtSpire_PinterestWebscraper\ScrapePinterestSelenium.exe  https://www.pinterest.com/justin_jaro/character-design/ 3 E:/Apps/ArtSpire_PinterestWebscraper/python/parsefiles.json batch board E:\Apps\ArtSpire_PinterestWebscraper\chromedriver88.exe
 
 
 from selenium import webdriver
