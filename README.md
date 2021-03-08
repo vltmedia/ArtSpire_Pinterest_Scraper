@@ -21,8 +21,9 @@ The program will return a JSON string along with writing a new file at the path 
 2. In the Top left field, set a **Search Term** or a **Pinterest URL** then it Search.
 3. You will need to wait a bit while the site is scraped for your results.
 4. Select the pins you wish to preview when loaded.
-5. Download any singular pins you want either in lowres or highres. Click the **Save** button to bring up the *Save Info* menu in which you can set the **HighRes Toggle**.
-6. You can save your cached results to a json filein the *Save Info* menu.
+- Download any singular pins you want either in lowres or highres. Click the **Save** button to bring up the *Save Info* menu in which you can set the **HighRes Toggle**.
+- User can also download either **ALL THE PINS** or **ALL THE PAGE PINS** (Currently viewed pins) to files. 
+- You can save your cached results to a json filein the *Save Info* menu.
 
 ![Regular Search](https://github.com/vltmedia/ArtSpire_Pinterest_Scraper/raw/master/images/ArtSpire_v0122_01.png)
 
