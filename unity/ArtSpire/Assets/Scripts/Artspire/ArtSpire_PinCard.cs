@@ -49,7 +49,10 @@ public class ArtSpire_PinCard : MonoBehaviour
         }
     }
 
-
+    public void OpenPinOnline()
+    {
+        Application.OpenURL(Pin.PinLink);
+    }
     public void OpenPin()
     {
         ArtSpire_API_Manager.Instance.OpenPin(this);

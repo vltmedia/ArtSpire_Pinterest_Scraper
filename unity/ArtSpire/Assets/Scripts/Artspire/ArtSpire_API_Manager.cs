@@ -69,6 +69,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public string OutputParseFile = "parsedfile.json";
     public string OutputParseFileHR = "parsedfilehr.json";
     public int PinsPerPage = 20;
+    public float RandomizeTime = 1;
 
     [Space(10)]
     [Header("Set UI")]
@@ -99,6 +100,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public int CurrentPageMinPin = 0;
     public int CurrentPageMaxPin = 0;
     public int CurrentPageMax = 0;
+    public bool RandomFlashImages = false;
     public ArtSpire_API_Argument Argument;
     public ArtSpire_API_Pins LoadedPins;
     public List<ArtSpire_PinCardHolder> PinCardHolders = new List<ArtSpire_PinCardHolder>();
@@ -537,6 +539,29 @@ public class ArtSpire_API_Manager : MonoBehaviour
     {
         StartCoroutine(WriteAllPinsToPNG());
     }
+    public void StartRandomizePins()
+    {
+
+        RandomFlashImages = true;
+        StartCoroutine(RandomizePins());
+    }
+    public IEnumerator RandomizePins()
+    {
+
+        yield return new WaitForSeconds(RandomizeTime);
+        RandomFlashImages = false;
+
+
+    }
+    public void OpenRandomPin()
+    {
+        OpenPin(LoadedPins.Pins[Random.Range(0, LoadedPins.Pins.Length - 1)]);
+    }
+    public void OpenPin(ArtSpire_API_Pin currentcard)
+    {
+        MainPinCard.Pin = currentcard;
+        MainPinCard.InitializePin();
+    }
     public void OpenPin(ArtSpire_PinCard currentcard)
     {
         MainPinCard.Pin = currentcard.Pin;
@@ -552,6 +577,10 @@ public class ArtSpire_API_Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (RandomFlashImages)
+        {
+            OpenRandomPin();
+        }
         if (Input.GetKeyDown(KeyCode.PageUp))
         {
             RunRefresh();
