@@ -10,6 +10,7 @@ public class ArtSpire_API_Pin
     public string Title;
     public string Caption;
     public string URL;
+    public string PinLink;
 
 }
 [System.Serializable]

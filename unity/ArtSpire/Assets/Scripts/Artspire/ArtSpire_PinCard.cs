@@ -37,8 +37,18 @@ public class ArtSpire_PinCard : MonoBehaviour
     }
     public void WriteFile(bool batchmode)
     {
-        ArtSpire_API_Manager.Instance.WritePNG(this, batchmode);
+        if (ArtSpire_API_Manager.Instance.HighresOutputToggle.isOn)
+        {
+            ArtSpire_API_Manager.Instance.SingleHRDownload(this.Pin);
+        }
+        else
+        {
+
+
+            ArtSpire_API_Manager.Instance.WritePNG(this, batchmode);
+        }
     }
+
 
     public void OpenPin()
     {

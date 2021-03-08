@@ -67,6 +67,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public string APIExeFile = "ScrapePinterestSelenium.exe";
     public string ChromeDriverFilePattern = "chromedriver*.exe";
     public string OutputParseFile = "parsedfile.json";
+    public string OutputParseFileHR = "parsedfilehr.json";
     public int PinsPerPage = 20;
 
     [Space(10)]
@@ -77,6 +78,9 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public TextMeshProUGUI LoadingText;
     public TMP_InputField URLField;
     public TMP_InputField ScrollCountField;
+    public TMP_InputField SaveCatagoryNameField;
+    public TMP_InputField OutputFolderPath;
+    public Toggle HighresOutputToggle;
     public GameObject LoadingPanel;
     public TextMeshProUGUI StatusText;
 
@@ -90,12 +94,15 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public string ChromeDriverFilePath = "";
     public string APIExeFilePath = "";
     public string OutputParseFilePath = "";
+    public string OutputParseFilePathHR = "";
     public int CurrentPage = 0;
     public int CurrentPageMinPin = 0;
     public int CurrentPageMaxPin = 0;
     public int CurrentPageMax = 0;
+    public ArtSpire_API_Argument Argument;
     public ArtSpire_API_Pins LoadedPins;
     public List<ArtSpire_PinCardHolder> PinCardHolders = new List<ArtSpire_PinCardHolder>();
+    public List<ArtSpire_API_Pin> PagePins = new List<ArtSpire_API_Pin>();
 
 
     // Start is called before the first frame update
@@ -127,7 +134,6 @@ public class ArtSpire_API_Manager : MonoBehaviour
     {
         PageCounter.text = (CurrentPage + 1) + " / " + (CurrentPageMax + 1);
         PinsCount.text = CurrentPageMinPin.ToString() + " : " + LoadedPins.Pins.Length;
-
     }
     public void PrevPage()
     {
@@ -157,7 +163,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
         RandomGenerator randomGenerator = new RandomGenerator();
         var dirPath = Application.dataPath + "/SaveImages/";
 
-        var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/";
+        var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/" + SaveCatagoryNameField.text +"/";
         if (!Directory.Exists(dirPath))
         {
             Directory.CreateDirectory(dirPath);
@@ -173,6 +179,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
         {
             StartCoroutine(ShowMenuTime("SAVED PNG TO : " + filepath, 2));
         }
+
     }
 
     IEnumerator WriteAllPinsToPNG()
@@ -182,24 +189,172 @@ public class ArtSpire_API_Manager : MonoBehaviour
         LoadingText.text = "SAVING " + LoadedPins.Pins.Length.ToString() + " Pins... At | 0%";
 
         yield return new WaitForSeconds(0.8f);
-        foreach (var pinn in LoadedPins.Pins)
+
+        if (HighresOutputToggle.isOn == false) {
+            //Lowres output
+
+            foreach (var pinn in LoadedPins.Pins)
+            {
+                var newcount = currentcountt + 1;
+                currentcountt = newcount;
+                var percentage = Mathf.RoundToInt((currentcountt / LoadedPins.Pins.Length) * 100).ToString() + "%";
+                UnityWebRequest www = UnityWebRequestTexture.GetTexture(pinn.URL);
+                yield return www.SendWebRequest();
+
+                Texture myTexture = DownloadHandlerTexture.GetContent(www);
+
+                //first Make sure you're using RGB24 as your texture format
+                Texture2D texture = (Texture2D)myTexture;
+
+                //then Save To Disk as PNG
+                byte[] bytes = texture.EncodeToPNG();
+                var dirPath = Application.dataPath + "/SaveImages/";
+
+                var datepath = GetTodaysSavedFolder();
+
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+                if (!Directory.Exists(datepath))
+                {
+                    Directory.CreateDirectory(datepath);
+                }
+                RandomGenerator randomGenerator = new RandomGenerator();
+                var filepath = datepath + randomGenerator.RandomPassword() + System.DateTime.Now.ToString("yyyyMMddhhmmss") + ".png";
+                File.WriteAllBytes(filepath, bytes);
+                LoadingText.text = "SAVING " + LoadedPins.Pins.Length.ToString() + " Pins... At | " + percentage;
+
+            }
+        
+        SaveCachedJSONWithImages();
+        }
+        else
         {
-            var newcount = currentcountt + 1;
-            currentcountt = newcount;
-            var percentage = Mathf.RoundToInt((currentcountt / LoadedPins.Pins.Length) * 100).ToString() + "%";
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(pinn.URL);
-        yield return www.SendWebRequest();
+            //Highres Output
 
-        Texture myTexture = DownloadHandlerTexture.GetContent(www);
- 
-        //first Make sure you're using RGB24 as your texture format
-        Texture2D texture = (Texture2D)myTexture;
+            
+        StartCoroutine(ShowLoadingMenuRunProcess(GenerateHighresOutputArgument(), "LOADING PLEASE WAIT THIS WILL TAKE A WHILE... 'CONTROL + C' inside the terminal to stop the process."));
 
-        //then Save To Disk as PNG
-        byte[] bytes = texture.EncodeToPNG();
-            var dirPath = Application.dataPath + "/SaveImages/";
 
-            var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/";
+
+        }
+        StartCoroutine(ShowMenuTime("Saved all the " + LoadedPins.Pins.Length.ToString() + " Images." , 3));
+
+
+
+    }
+    public void SingleHRDownload(ArtSpire_API_Pin Pin)
+    {
+        List<ArtSpire_API_Pin> newpinss = new List<ArtSpire_API_Pin>();
+        newpinss.Add(Pin);
+        ArtSpire_API_Pins newpins = new ArtSpire_API_Pins();
+        newpins.Pins = newpinss.ToArray();
+        string json = JsonUtility.ToJson(newpins);
+        if (!Directory.Exists(GetTodaysSavedFolder())){
+            Directory.CreateDirectory(GetTodaysSavedFolder());
+        }
+        var filepath = GetTodaysSavedFolder() + "pagescut.json";
+        File.WriteAllText(filepath, json);
+
+        var boardmode = "highresdump";
+        var urll = URLField.text;
+        if (!URLField.text.Contains(".com"))
+        {
+            //urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
+            urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&/_tools/more-ideas/?ideas_referrer=2";
+            //boardmode = "search";
+        }
+        OutputParseFilePathHR = GetTodaysSavedFolder() + OutputParseFileHR;
+        var Arguments = "\"" + filepath + "\" \"" + ScrollCountField.text + "\" \"" + OutputParseFilePathHR + "\" batch " + boardmode + " \"" + ChromeDriverFilePath + "\" \"" + GetTodaysSavedFolder() + "\"";
+        StartCoroutine(ShowLoadingMenuRunProcess(Arguments, "LOADING PLEASE WAIT THIS WILL TAKE A WHILE... 'CONTROL + C' inside the terminal to stop the process."));
+    }
+    public void SaveAllImagesOnPage()
+    {
+        SaveCachedJSONWithImages();
+
+        if (HighresOutputToggle.isOn == true)
+        {
+            foreach (var pincard in PinCardHolders)
+            {
+                foreach (var pinn in pincard.PagePins.Pins)
+                {
+                    PagePins.Add(pinn);
+
+                }
+            }
+
+            ArtSpire_API_Pins newpins = new ArtSpire_API_Pins();
+            newpins.Pins = PagePins.ToArray();
+            string json = JsonUtility.ToJson(newpins);
+            var filepath = GetTodaysSavedFolder() + "pagescut.json";
+            File.WriteAllText(filepath, json);
+
+            var boardmode = "highresdump";
+            var urll = URLField.text;
+            if (!URLField.text.Contains(".com"))
+            {
+                //urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
+                urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&/_tools/more-ideas/?ideas_referrer=2";
+                //boardmode = "search";
+            }
+            OutputParseFilePathHR = GetTodaysSavedFolder() + OutputParseFileHR;
+            var Arguments = "\"" + filepath + "\" \"" + ScrollCountField.text + "\" \"" + OutputParseFilePathHR + "\" batch " + boardmode + " \"" + ChromeDriverFilePath + "\" \"" + GetTodaysSavedFolder() + "\"";
+            StartCoroutine(ShowLoadingMenuRunProcess(Arguments, "LOADING PLEASE WAIT THIS WILL TAKE A WHILE... 'CONTROL + C' inside the terminal to stop the process."));
+
+
+        }
+        else
+        {
+
+
+        
+        foreach (var pincard in PinCardHolders)
+        {
+            pincard.SaveAllImagesOnPage();
+        }
+        }
+
+        StartCoroutine(ShowMenuTime("Saved all the Images for Page " + (CurrentPage + 1).ToString(), 3));
+    }
+    public void UpdateOutputFolderPath()
+    {
+        OutputFolderPath.text = GetTodaysSavedFolder();
+
+        //UpdateCatagory();
+        //OutputParseFilePath = OutputFolderPath.text;
+
+
+    }
+    public string GetTodaysSavedFolder()
+    {
+        var dirPath = Application.dataPath + "/SaveImages/";
+
+        var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/" + SaveCatagoryNameField.text + "/";
+        return datepath;
+    }
+    public void SaveCachedJSON()
+    {
+        var dirPath = Application.dataPath + "/SavedCache/";
+
+
+        if (!Directory.Exists(dirPath))
+        {
+            Directory.CreateDirectory(dirPath);
+        }
+     
+        RandomGenerator randomGenerator = new RandomGenerator();
+        var filepath = dirPath + SaveCatagoryNameField.text+ ".json";
+        System.IO.File.Copy( OutputParseFilePath, filepath);
+        StartCoroutine(ShowMenuTime("Saved the cached info to a JSON file! " + filepath, 3));
+
+    }
+    public void OpenOutputFolder()
+    {
+        var dirPath = Application.dataPath + "/SaveImages/";
+
+        var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/" + SaveCatagoryNameField.text + "/";
+
         if (!Directory.Exists(dirPath))
         {
             Directory.CreateDirectory(dirPath);
@@ -208,25 +363,44 @@ public class ArtSpire_API_Manager : MonoBehaviour
         {
             Directory.CreateDirectory(datepath);
         }
-        RandomGenerator randomGenerator = new RandomGenerator();
-        var filepath = datepath + randomGenerator.RandomPassword() + System.DateTime.Now.ToString("yyyyMMddhhmmss") + ".png";
-        File.WriteAllBytes(filepath, bytes);
-            LoadingText.text = "SAVING " + LoadedPins.Pins.Length.ToString() + " Pins... At | " + percentage;
-
-        }
-        StartCoroutine(ShowMenuTime("Saved all the " + LoadedPins.Pins.Length.ToString() + " Images." , 3));
-
-
+        Process.Start(datepath);
 
     }
-
-    public void SaveAllImagesOnPage()
+    public void OpenOutputCacheFolder()
     {
-        foreach(var pincard in PinCardHolders)
+        var dirPath = Application.dataPath + "/SavedCache/";
+
+
+        if (!Directory.Exists(dirPath))
         {
-            pincard.SaveAllImagesOnPage();
+            Directory.CreateDirectory(dirPath);
         }
-        StartCoroutine(ShowMenuTime("Saved all the Images for Page " + CurrentPage.ToString(), 3));
+     
+        Process.Start(dirPath);
+
+    }
+    public void SaveCachedJSONWithImages()
+    {
+        var dirPath = Application.dataPath + "/SaveImages/";
+
+        var datepath = dirPath + System.DateTime.Now.ToString("yyyyMMdd") + "/" + SaveCatagoryNameField.text + "/";
+
+        if (!Directory.Exists(dirPath))
+        {
+            Directory.CreateDirectory(dirPath);
+        }
+        if (!Directory.Exists(datepath))
+        {
+            Directory.CreateDirectory(datepath);
+        }
+
+        RandomGenerator randomGenerator = new RandomGenerator();
+        var filepath = datepath + SaveCatagoryNameField.text+ ".json";
+        if (System.IO.File.Exists(filepath)){
+            System.IO.File.Delete(filepath);
+        }
+        System.IO.File.Copy( OutputParseFilePath, filepath);
+
     }
     void Start()
     {
@@ -235,6 +409,10 @@ public class ArtSpire_API_Manager : MonoBehaviour
             ChromeDriverFilePath = Directory.GetFiles(Application.dataPath, ChromeDriverFilePattern, SearchOption.TopDirectoryOnly)[0];
             APIExeFilePath = Application.dataPath + "/" + APIExeFile;
             OutputParseFilePath = Application.dataPath + "/" + OutputParseFile;
+            OutputParseFilePathHR = Application.dataPath + "/" + OutputParseFileHR;
+            OutputFolderPath.text = GetTodaysSavedFolder();
+            Argument.APIPath = APIExeFilePath;
+            Argument.outputJSONPath = OutputParseFilePath;
 
         }
         catch
@@ -313,19 +491,47 @@ public class ArtSpire_API_Manager : MonoBehaviour
             holder.InitializePins();
         }
     }
+    public string GenerateHighresOutputArgument()
+    {
+        // "C:\Users\Justin Jaro\output\ScrapePinterestSelenium.exe" "E:\Apps\ArtSpire_PinterestWebscraper\parsefiledump.json" 3 E:\Apps\ArtSpire_PinterestWebscraper\temp\HR1/parsefilehighres.json batch highresdump E:\Apps\ArtSpire_PinterestWebscraper\chromedriver88.exe E:\Apps\ArtSpire_PinterestWebscraper\temp\HR1
+        // "[API] [JSONTEMPLATE] [INT] [OUTPUT_JSONPATH] [BATCHMODE] [highresdump]  [CHROME_DRIVER] [OUTPUT_FOLDERPATH]
+        //# E:\Apps\ArtSpire_PinterestWebscraper\ScrapePinterestSelenium.exe "E:\Apps\ArtSpire_PinterestWebscraper\parsefiledump.json" 3 E:/Apps/ArtSpire_PinterestWebscraper/parsefilebirdhighres.json batch highresdump E:\Apps\ArtSpire_PinterestWebscraper\chromedriver88.exe E:\Apps\ArtSpire_PinterestWebscraper\temp\HR1
+
+
+        var boardmode = "highresdump";
+        var urll = URLField.text;
+        if (!URLField.text.Contains(".com"))
+        {
+            //urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
+            urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&/_tools/more-ideas/?ideas_referrer=2";
+            //boardmode = "search";
+        }
+        OutputParseFilePathHR = GetTodaysSavedFolder() + OutputParseFileHR;
+        var Arguments = "\"" + OutputParseFilePath + "\" \"" + ScrollCountField.text + "\" \"" + OutputParseFilePathHR + "\" batch " + boardmode + " \"" + ChromeDriverFilePath + "\" \"" + GetTodaysSavedFolder() + "\"";
+        return Arguments;
+    }
     public void RunRefresh()
     {
         var boardmode = "board";
         var urll = URLField.text;
         if (!URLField.text.Contains(".com"))
         {
-            urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
-            boardmode = "search";
+            //urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
+            urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&/_tools/more-ideas/?ideas_referrer=2";
+            //boardmode = "search";
         }
         var Arguments = urll + " "+ ScrollCountField.text+ " \"" + OutputParseFilePath + "\" batch "+ boardmode + " \"" + ChromeDriverFilePath + "\"";
+
         StartCoroutine(ShowLoadingMenuRunProcess(Arguments, "LOADING PLEASE WAIT..."));
 
 
+    }
+    public void UpdateCatagory()
+    {
+        if (!URLField.text.Contains(".com")) {
+            SaveCatagoryNameField.text = URLField.text;
+}
+        UpdateOutputFolderPath();
     }
     public void SaveAllImages()
     {
