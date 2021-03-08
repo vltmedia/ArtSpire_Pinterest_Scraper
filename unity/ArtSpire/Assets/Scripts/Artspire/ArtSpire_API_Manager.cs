@@ -82,6 +82,7 @@ public class ArtSpire_API_Manager : MonoBehaviour
     public TMP_InputField SaveCatagoryNameField;
     public TMP_InputField OutputFolderPath;
     public Toggle HighresOutputToggle;
+    public Toggle MoreIdeasToggle;
     public GameObject LoadingPanel;
     public TextMeshProUGUI StatusText;
 
@@ -485,6 +486,16 @@ public class ArtSpire_API_Manager : MonoBehaviour
         InitializeHolders();
 
     }
+    
+    public void LoadParsedJSON(string filepath)
+    {
+        var jsonString = File.ReadAllText(filepath);
+        LoadedPins = JsonUtility.FromJson<ArtSpire_API_Pins>(jsonString);
+        CurrentPageMax = Mathf.RoundToInt(LoadedPins.Pins.Length / 20) - 1;
+        UpdatePageInfo();
+        InitializeHolders();
+
+    }
 
     public void InitializeHolders()
     {
@@ -521,6 +532,9 @@ public class ArtSpire_API_Manager : MonoBehaviour
             //urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&rs=typed&term_meta[]=" + URLField.text.Replace(" ", "%20") + "%7Ctyped";
             urll = "https://www.pinterest.com/search/pins/?q=" + URLField.text.Replace(" ", "%20") + "&/_tools/more-ideas/?ideas_referrer=2";
             //boardmode = "search";
+        } if (MoreIdeasToggle.isOn)
+        {
+            urll = URLField.text + "_tools/more-ideas/?ideas_referrer=2";
         }
         var Arguments = urll + " "+ ScrollCountField.text+ " \"" + OutputParseFilePath + "\" batch "+ boardmode + " \"" + ChromeDriverFilePath + "\"";
 
