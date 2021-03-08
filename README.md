@@ -11,7 +11,7 @@ The program will return a JSON string along with writing a new file at the path 
 
 ## Setup
 1. Download a [Chrome Driver](https://chromedriver.chromium.org/downloads) that matches your current Chrome Version. MAKE SURE THEY MATCH!
-2. Save it to the same directory in which ``ScrapePinterestSelenium.exe`` is located.
+2. Save it to the same directory in wherever ``ScrapePinterestSelenium.exe`` is located.
 
 
 
@@ -67,3 +67,8 @@ The program will return a JSON string along with writing a new file at the path 
 ```
 
 
+
+## Roadmap
+
+- Cleanup Cards UI
+- Parse Instagram also
